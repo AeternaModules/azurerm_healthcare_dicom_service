@@ -28,12 +28,12 @@ EOT
     location                      = string
     name                          = string
     workspace_id                  = string
-    data_partitions_enabled       = optional(bool, false)
+    data_partitions_enabled       = optional(bool) # Default: false
     encryption_key_url            = optional(string)
-    public_network_access_enabled = optional(bool, true)
+    public_network_access_enabled = optional(bool) # Default: true
     tags                          = optional(map(string))
     cors = optional(object({
-      allow_credentials  = optional(bool, false)
+      allow_credentials  = optional(bool) # Default: false
       allowed_headers    = optional(list(string))
       allowed_methods    = optional(list(string))
       allowed_origins    = optional(list(string))

@@ -1,3 +1,7 @@
+output "healthcare_dicom_services_id" {
+  description = "Map of id values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
+  value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => v.id }
+}
 output "healthcare_dicom_services_authentication" {
   description = "Map of authentication values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
   value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => v.authentication }

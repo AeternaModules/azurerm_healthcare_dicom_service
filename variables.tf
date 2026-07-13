@@ -48,58 +48,54 @@ EOT
       storage_account_id = string
     }))
   }))
-  # --- Unconfirmed validation candidates, derived from azurerm_healthcare_dicom_service's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: name
-  #   source:    validate.DicomServiceName: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: workspace_id
-  #   source:    [from workspaces.ValidateWorkspaceID] !ok
-  # path: workspace_id
-  #   source:    [from workspaces.ValidateWorkspaceID] err != nil
-  # path: location
-  #   source:    location.EnhancedValidate: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: identity.type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: identity.identity_ids[*]
-  #   source:    [from commonids.ValidateUserAssignedIdentityID] !ok
-  # path: identity.identity_ids[*]
-  #   source:    [from commonids.ValidateUserAssignedIdentityID] err != nil
-  # path: cors.allowed_origins[*]
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: cors.allowed_headers[*]
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: cors.allowed_methods[*]
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: cors.max_age_in_seconds
-  #   condition: value >= 0 && value <= 99998
-  #   message:   must be between 0 and 99998
-  # path: encryption_key_url
-  #   source:    validation.IsURLWithHTTPS(...) - no translation rule yet, add one
-  # path: storage.file_system_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: storage.storage_account_id
-  #   source:    [from commonids.ValidateStorageAccountID] !ok
-  # path: storage.storage_account_id
-  #   source:    [from commonids.ValidateStorageAccountID] err != nil
-  # path: tags
-  #   condition: length(value) <= 50
-  #   message:   [from tags.Validate: invalid when len(value) > 50]
-  #   source:    [from tags.Validate: invalid when len(value) > 50]
-  # path: tags
-  #   condition: length(value) <= 512
-  #   message:   [from tags.Validate: invalid when len(value) > 512]
-  #   source:    [from tags.Validate: invalid when len(value) > 512]
-  # path: tags
-  #   source:    [from tags.Validate] err != nil
-  # path: tags
-  #   condition: length(value) <= 256
-  #   message:   [from tags.Validate: invalid when len(value) > 256]
-  #   source:    [from tags.Validate: invalid when len(value) > 256]
+  validation {
+    condition = alltrue([
+      for k, v in var.healthcare_dicom_services : (
+        v.cors == null || (v.cors.allowed_origins == null || (alltrue([for x in v.cors.allowed_origins : length(x) > 0])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.healthcare_dicom_services : (
+        v.cors == null || (v.cors.allowed_headers == null || (alltrue([for x in v.cors.allowed_headers : length(x) > 0])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.healthcare_dicom_services : (
+        v.cors == null || (v.cors.allowed_methods == null || (alltrue([for x in v.cors.allowed_methods : length(x) > 0])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.healthcare_dicom_services : (
+        v.cors == null || (v.cors.max_age_in_seconds == null || (v.cors.max_age_in_seconds >= 0 && v.cors.max_age_in_seconds <= 99998))
+      )
+    ])
+    error_message = "must be between 0 and 99998"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.healthcare_dicom_services : (
+        v.storage == null || (length(v.storage.file_system_name) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.healthcare_dicom_services : (
+        v.tags == null || (length(v.tags) <= 50)
+      )
+    ])
+    error_message = "[from tags.Validate: invalid when len(value) > 50]"
+  }
+  # Note: 13 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 

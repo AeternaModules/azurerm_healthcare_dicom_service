@@ -8,7 +8,7 @@ output "healthcare_dicom_services_authentication" {
 }
 output "healthcare_dicom_services_cors" {
   description = "Map of cors values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
-  value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => v.cors if v.cors != null && length(v.cors) > 0 }
+  value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => one(v.cors) if v.cors != null && length(v.cors) > 0 }
 }
 output "healthcare_dicom_services_data_partitions_enabled" {
   description = "Map of data_partitions_enabled values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
@@ -20,7 +20,7 @@ output "healthcare_dicom_services_encryption_key_url" {
 }
 output "healthcare_dicom_services_identity" {
   description = "Map of identity values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
-  value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => v.identity if v.identity != null && length(v.identity) > 0 }
+  value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => one(v.identity) if v.identity != null && length(v.identity) > 0 }
 }
 output "healthcare_dicom_services_location" {
   description = "Map of location values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
@@ -44,7 +44,7 @@ output "healthcare_dicom_services_service_url" {
 }
 output "healthcare_dicom_services_storage" {
   description = "Map of storage values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
-  value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => v.storage if v.storage != null && length(v.storage) > 0 }
+  value       = { for k, v in azurerm_healthcare_dicom_service.healthcare_dicom_services : k => one(v.storage) if v.storage != null && length(v.storage) > 0 }
 }
 output "healthcare_dicom_services_tags" {
   description = "Map of tags values across all healthcare_dicom_services, keyed the same as var.healthcare_dicom_services"
